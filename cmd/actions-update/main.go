@@ -11,7 +11,7 @@ import (
 )
 
 var knownActions = map[string]string{
-	"actions/checkout":                   "v2",
+	"actions/checkout":                   "v3",
 	"actions/download-artifact":          "v3",
 	"actions/setup-go":                   "v3",
 	"actions/setup-python":               "v3",
