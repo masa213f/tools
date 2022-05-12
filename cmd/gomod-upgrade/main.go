@@ -14,17 +14,29 @@ const (
 	ctrlModule = "sigs.k8s.io/controller-runtime"
 )
 
-var k8sModules = []string{
-	"k8s.io/api",
-	"k8s.io/apiextensions-apiserver",
-	"k8s.io/apimachinery",
-	"k8s.io/apiserver",
-	"k8s.io/client-go",
-	"k8s.io/cli-runtime",
-	"k8s.io/kubectl",
-	"k8s.io/kubelet",
-	"k8s.io/kube-proxy",
-	"k8s.io/kube-scheduler",
+var (
+	k8sModules = []string{
+		"k8s.io/api",
+		"k8s.io/apiextensions-apiserver",
+		"k8s.io/apimachinery",
+		"k8s.io/apiserver",
+		"k8s.io/client-go",
+		"k8s.io/cli-runtime",
+		"k8s.io/kubectl",
+		"k8s.io/kubelet",
+		"k8s.io/kube-proxy",
+		"k8s.io/kube-scheduler",
+	}
+	k8sModulesMap     map[string]bool
+	k8sModulesVersion string
+)
+
+func init() {
+	k8sModulesMap = map[string]bool{}
+	for _, i := range k8sModules {
+		k8sModulesMap[i] = true
+	}
+	flag.StringVar(&k8sModulesVersion, "k", "", "Kubernetes modules version")
 }
 
 func main() {
@@ -54,22 +66,30 @@ func main() {
 		os.Exit(1)
 	}
 
-	ignoreMap := map[string]bool{}
-	for _, i := range k8sModules {
-		ignoreMap[i] = true
-	}
-	ignoreMap[ctrlModule] = true
-
+	requiredK8sModules := []string{}
 	for _, r := range file.Require {
 		if r.Indirect {
 			continue
 		}
-		if ignoreMap[r.Mod.Path] {
+		if ctrlModule == r.Mod.Path {
 			fmt.Printf("skip: %s\n", r.Mod.Path)
 			continue
 		}
-
+		if k8sModulesMap[r.Mod.Path] {
+			if k8sModulesVersion != "" {
+				requiredK8sModules = append(requiredK8sModules, r.Mod.Path+"@"+k8sModulesVersion)
+			} else {
+				fmt.Printf("skip: %s\n", r.Mod.Path)
+			}
+			continue
+		}
 		execCmd("go", "get", "-d", r.Mod.Path)
+	}
+
+	if len(requiredK8sModules) != 0 {
+		cmd := []string{"go", "get", "-d"}
+		cmd = append(cmd, requiredK8sModules...)
+		execCmd(cmd...)
 	}
 
 	execCmd("go", "mod", "tidy")
