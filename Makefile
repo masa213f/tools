@@ -26,10 +26,9 @@ vet:
 .PHONY: build
 build:
 	mkdir -p $(BIN_DIR)
-	go build -o $(BIN_DIR)/ ./cmd/kustomize-build-all
-	go build -o $(BIN_DIR)/ ./cmd/update-actions
-	go build -o $(BIN_DIR)/ ./cmd/update-gomod
+	go build -o $(BIN_DIR)/ ./cmd/...
 
 .PHONY: install
 install:
 	go install ./cmd/...
+	sudo mv $(GOBIN)/setup-go /usr/local/sbin/
