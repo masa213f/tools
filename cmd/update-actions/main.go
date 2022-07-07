@@ -15,15 +15,15 @@ var knownActions = map[string]string{
 	"actions/checkout":                   "v3",
 	"actions/download-artifact":          "v3",
 	"actions/setup-go":                   "v3",
-	"actions/setup-python":               "v3",
+	"actions/setup-python":               "v4",
 	"actions/upload-artifact":            "v3",
-	"azure/setup-helm":                   "v1",
-	"google-github-actions/auth":         "v0.7.0",
+	"azure/setup-helm":                   "v3",
+	"google-github-actions/auth":         "v0.8.0",
 	"google-github-actions/setup-gcloud": "v0.6.0",
-	"goreleaser/goreleaser-action":       "v2",
+	"goreleaser/goreleaser-action":       "68acf3b1adf004ac9c2f0a4259e85c5f66e99bef", // v3.0.0
 	"helm/chart-testing-action":          "v2.2.1",
-	"helm/kind-action":                   "v1.2.0",
-	"rajatjindal/krew-release-bot":       "ba5e167fbd1526240f5f5d2eaf1ec573fc5942de",
+	"helm/kind-action":                   "v1.3.0",
+	"rajatjindal/krew-release-bot":       "92da038bbf995803124a8e50ebd438b2f37bbbb0", // 0.0.43
 }
 
 var (
@@ -144,8 +144,5 @@ func main() {
 }
 
 func isYamlFile(name string) bool {
-	if strings.HasSuffix(name, ".yaml") || strings.HasSuffix(name, ".yml") {
-		return true
-	}
-	return false
+	return strings.HasSuffix(name, ".yaml") || strings.HasSuffix(name, ".yml")
 }
