@@ -45,7 +45,7 @@ func init() {
 func main() {
 	flag.Parse()
 	if flag.NArg() > 1 {
-		fmt.Println("Usage: gomod-update [WORK_DIR]")
+		fmt.Println("Usage: update-gomod [WORK_DIR]")
 		os.Exit(1)
 	}
 	if workDir := flag.Arg(0); workDir != "" {

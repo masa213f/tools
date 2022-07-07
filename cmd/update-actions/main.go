@@ -65,7 +65,7 @@ func readFile(path string) ([]string, error) {
 func main() {
 	flag.Parse()
 	if flag.NArg() > 1 {
-		fmt.Println("Usage: actions-update [TARGET_DIR]")
+		fmt.Println("Usage: update-actions [TARGET_DIR]")
 		os.Exit(1)
 	}
 	targetDir := "."
