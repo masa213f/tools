@@ -3,10 +3,11 @@ package main
 import (
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"sync"
+
+	"github.com/masa213f/tools/pkg/util"
 )
 
 var kustomizeCmd = "kustomize"
@@ -66,21 +67,13 @@ func subMain(targetRoot, outputRoot string) error {
 
 	var wg sync.WaitGroup
 	for targetDir, outputFile := range job {
+		targetDir := targetDir
+		outputFile := outputFile
 		wg.Add(1)
-		go func(t, o string) {
+		go func() {
 			defer wg.Done()
-			stdoutStderr, err := kustomizeBuild(t, o)
-			if err != nil {
-				var b strings.Builder
-				fmt.Fprintf(&b, "Failed to kustomize build\n")
-				fmt.Fprintf(&b, "  Target: %v\n", t)
-				fmt.Fprintf(&b, "  Error: %v\n", err)
-				if len(stdoutStderr) != 0 {
-					fmt.Fprintf(&b, "  Output: %s\n", stdoutStderr)
-				}
-				fmt.Print(b.String())
-			}
-		}(targetDir, outputFile)
+			util.ExecCmd(kustomizeCmd, "build", "--enable-helm", targetDir, "-o", outputFile)
+		}()
 	}
 	wg.Wait()
 
@@ -89,9 +82,4 @@ func subMain(targetRoot, outputRoot string) error {
 
 func isKustomizationFile(name string) bool {
 	return name == "kustomization.yaml" || name == "kustomization.yml" || name == "Kustomization"
-}
-
-func kustomizeBuild(targetDir, outputFile string) ([]byte, error) {
-	cmd := exec.Command(kustomizeCmd, "build", "--enable-helm", targetDir, "-o", outputFile)
-	return cmd.CombinedOutput()
 }

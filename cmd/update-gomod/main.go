@@ -4,9 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"os/exec"
-	"strings"
 
+	"github.com/masa213f/tools/pkg/util"
 	"golang.org/x/mod/modfile"
 )
 
@@ -112,29 +111,10 @@ func subMain() error {
 	}
 
 	for _, modules := range job {
-		err := execCmd(append([]string{"go", "get", "-d"}, modules...)...)
+		err := util.ExecCmd(append([]string{"go", "get", "-d"}, modules...)...)
 		if err != nil {
 			return err
 		}
 	}
-	return execCmd("go", "mod", "tidy")
-}
-
-func execCmd(cmd ...string) error {
-	stdoutStderr, err := exec.Command(cmd[0], cmd[1:]...).CombinedOutput()
-
-	var b strings.Builder
-	fmt.Fprintf(&b, "RUN: %s\n", strings.Join(cmd, " "))
-	if err != nil {
-		fmt.Fprintf(&b, "ERROR: %v\n", err)
-	}
-	if len(stdoutStderr) != 0 {
-		fmt.Fprintln(&b, string(stdoutStderr))
-	}
-	fmt.Print(b.String())
-
-	if err != nil {
-		return fmt.Errorf("failed to exec %s; %w", cmd, err)
-	}
-	return nil
+	return util.ExecCmd("go", "mod", "tidy")
 }
