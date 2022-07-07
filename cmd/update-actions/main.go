@@ -10,7 +10,8 @@ import (
 	"strings"
 )
 
-var knownActions = map[string]string{
+// Key: name, Value: tag
+var permittedActions = map[string]string{
 	"actions/cache":                      "v3",
 	"actions/checkout":                   "v3",
 	"actions/download-artifact":          "v3",
@@ -24,6 +25,11 @@ var knownActions = map[string]string{
 	"helm/chart-testing-action":          "v2.2.1",
 	"helm/kind-action":                   "v1.3.0",
 	"rajatjindal/krew-release-bot":       "92da038bbf995803124a8e50ebd438b2f37bbbb0", // 0.0.43
+}
+
+// Key: name, Value: reason
+var prohibitedActions = map[string]string{
+	"actions/create-release": "archived",
 }
 
 var (
@@ -74,7 +80,8 @@ func main() {
 	}
 
 	workflowFiles := []string{}
-	walkFunc := func(path string, info os.FileInfo, err error) error {
+	rootDir := filepath.Join(targetDir, ".github")
+	err := filepath.Walk(rootDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -90,8 +97,7 @@ func main() {
 		}
 		workflowFiles = append(workflowFiles, abs)
 		return nil
-	}
-	err := filepath.Walk(filepath.Join(targetDir, ".github"), walkFunc)
+	})
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "filepath.Walk: %v", err)
 		os.Exit(1)
@@ -110,29 +116,32 @@ func main() {
 			if action == "" {
 				continue
 			}
-			// fmt.Printf("Find: line %d, %s\n", i, action)
 
 			split := strings.SplitN(action, "@", 2)
 			if len(split) != 2 {
-				fmt.Fprintf(os.Stderr, "unknown format: %d, %s\n", i, action)
-				os.Exit(1)
+				fmt.Printf("%4d, Error. unknown format: %s\n", i, action)
+				continue
 			}
+			name := split[0]
+			currentVersion := split[1]
 
-			version, ok := knownActions[split[0]]
-			if !ok {
-				fmt.Fprintf(os.Stderr, "unknown action: %d, %s\n", i, action)
-				os.Exit(1)
-			}
-			if version == "" {
-				fmt.Fprintf(os.Stderr, "actions is not allowed: %d, %s\n", i, action)
-				os.Exit(1)
-			}
-			if version == split[1] {
+			if reason, ok := prohibitedActions[name]; ok {
+				fmt.Printf("%4d, Error. prohibited (%s): %s\n", i, reason, action)
 				continue
 			}
 
-			fmt.Printf("Replace: line %d, %s -> %s\n", i, action, version)
-			contents[i] = replaceActionTag(line, version)
+			requiredVersion := permittedActions[name]
+			if requiredVersion == "" {
+				fmt.Printf("%4d, Error. unknown action: %s\n", i, action)
+				continue
+			}
+			if requiredVersion == currentVersion {
+				fmt.Printf("%4d, OK. %s\n", i, action)
+				continue
+			}
+
+			fmt.Printf("%4d, Replace. %s -> %s\n", i, action, requiredVersion)
+			contents[i] = replaceActionTag(line, requiredVersion)
 		}
 
 		err = os.WriteFile(path, []byte(strings.Join(contents, "\n")+"\n"), os.ModePerm)
