@@ -19,6 +19,8 @@ func ExecCmd(cmd ...string) error {
 	}
 	if len(stdoutStderr) != 0 {
 		fmt.Fprintln(&b, string(stdoutStderr))
+	} else {
+		fmt.Fprintln(&b, "")
 	}
 	fmt.Print(b.String())
 
