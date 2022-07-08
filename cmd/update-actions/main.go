@@ -29,7 +29,8 @@ var permittedActions = map[string]string{
 
 // Key: name, Value: reason
 var prohibitedActions = map[string]string{
-	"actions/create-release": "archived",
+	"actions/create-release":       "archived",
+	"actions/upload-release-asset": "archived",
 }
 
 var (
