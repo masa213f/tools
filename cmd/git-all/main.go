@@ -1,54 +1,92 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"sync"
 
 	"github.com/masa213f/tools/pkg/util"
 )
 
-var gitCmd = "git"
+var options struct {
+	targetRoots []string
+	command     string
+	commandArgs []string
+}
+
+const usage = `Usage: git-all [ [ -c COMMAND ] TARGET_ROOT...  -- ] COMMAND_ARGS`
 
 func main() {
-	if len(os.Args) < 3 {
-		fmt.Println("Usage: git-all TARGET_ROOT GIT_ARGS")
-		os.Exit(1)
+	myArgs := []string{}
+	options.commandArgs = os.Args[1:]
+	for i, a := range os.Args {
+		if a == "--" {
+			myArgs = os.Args[1:i]
+			options.commandArgs = os.Args[i+1:]
+			break
+		}
 	}
-	targetRoot, _ := filepath.Abs(os.Args[1])
-	gitArgs := os.Args[2:]
 
-	if c := os.Getenv("GIT_COMMAND"); c != "" {
-		gitCmd = c
+	flagSet := flag.NewFlagSet("", flag.ExitOnError)
+	flagSet.StringVar(&options.command, "c", "git", "command")
+	err := flagSet.Parse(myArgs)
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
 	}
+	options.targetRoots = flagSet.Args()
 
-	fmt.Printf("TARGET_ROOT: %s\n", targetRoot)
-	fmt.Printf("GIT_COMMAND: %s\n", gitCmd)
-	fmt.Printf("GIT_ARGS: %v\n", gitArgs)
+	fmt.Printf("TARGET_ROOTS: %v\n", options.targetRoots)
+	fmt.Printf("COMMAND: %s\n", options.command)
+	fmt.Printf("COMMAND_ARGS: %v\n", options.commandArgs)
+	fmt.Println()
 
-	err := subMain(targetRoot, gitArgs)
+	err = subMain(options.targetRoots, options.command, options.commandArgs)
 	if err != nil {
 		fmt.Printf("Error: %v", err)
 		os.Exit(1)
 	}
 }
 
-func subMain(targetRoot string, gitArgs []string) error {
-	targets := []string{}
-	err := filepath.Walk(targetRoot, func(path string, info os.FileInfo, err error) error {
+func findWorkingDirs(rootDir string) ([]string, error) {
+	dirs := []string{}
+	err := filepath.Walk(rootDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 		if info.IsDir() && info.Name() == ".git" {
-			targets = append(targets, filepath.Dir(path))
+			abs, err := filepath.Abs(filepath.Dir(path))
+			if err != nil {
+				return err
+			}
+			dirs = append(dirs, abs)
 			// Skip other files in the directory
 			return filepath.SkipDir
 		}
 		return nil
 	})
 	if err != nil {
-		return fmt.Errorf("failed to filepath.Walk: %w", err)
+		return nil, fmt.Errorf("failed to filepath.Walk: %w", err)
+	}
+	return dirs, nil
+}
+
+func subMain(rootDirs []string, cmd string, args []string) error {
+	targets := []string{}
+	tmp := map[string]struct{}{}
+	for _, r := range rootDirs {
+		dirs, err := findWorkingDirs(r)
+		if err != nil {
+			return err
+		}
+		for _, d := range dirs {
+			tmp[d] = struct{}{}
+		}
+	}
+	for k := range tmp {
+		targets = append(targets, k)
 	}
 
 	var wg sync.WaitGroup
@@ -57,7 +95,9 @@ func subMain(targetRoot string, gitArgs []string) error {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			util.ExecCmd(append([]string{gitCmd, "-C", targetDir}, gitArgs...)...)
+			cmd := exec.Command(cmd, args...)
+			cmd.Dir = targetDir
+			util.Run(cmd)
 		}()
 	}
 	wg.Wait()

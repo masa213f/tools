@@ -9,11 +9,14 @@ import (
 	"strings"
 )
 
-func ExecCmd(cmd ...string) error {
-	stdoutStderr, err := exec.Command(cmd[0], cmd[1:]...).CombinedOutput()
+func Run(c *exec.Cmd) error {
+	stdoutStderr, err := c.CombinedOutput()
 
 	var b strings.Builder
-	fmt.Fprintf(&b, "RUN: %s\n", strings.Join(cmd, " "))
+	fmt.Fprintf(&b, "RUN: %s\n", strings.Join(c.Args, " "))
+	if len(c.Dir) != 0 {
+		fmt.Fprintf(&b, "IN: %s\n", c.Dir)
+	}
 	if err != nil {
 		fmt.Fprintf(&b, "ERROR: %v\n", err)
 	}
@@ -25,7 +28,7 @@ func ExecCmd(cmd ...string) error {
 	fmt.Print(b.String())
 
 	if err != nil {
-		return fmt.Errorf("failed to exec %s; %w", cmd, err)
+		return fmt.Errorf("failed to exec %s; %w", c.Args, err)
 	}
 	return nil
 }

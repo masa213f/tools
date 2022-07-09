@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -72,7 +73,8 @@ func subMain(targetRoot, outputRoot string) error {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			util.ExecCmd(kustomizeCmd, "build", "--enable-helm", targetDir, "-o", outputFile)
+			cmd := exec.Command(kustomizeCmd, "build", "--enable-helm", targetDir, "-o", outputFile)
+			util.Run(cmd)
 		}()
 	}
 	wg.Wait()

@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"os/exec"
 
 	"github.com/masa213f/tools/pkg/util"
 	"golang.org/x/mod/modfile"
@@ -47,29 +48,17 @@ func main() {
 		fmt.Println("Usage: update-gomod [WORK_DIR]")
 		os.Exit(1)
 	}
-	if workDir := flag.Arg(0); workDir != "" {
-		err := os.Chdir(workDir)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "failed to change working directory: %v\n", err)
-			os.Exit(1)
-		}
-	}
+	workDir := flag.Arg(0)
+	fmt.Printf("WORK_DIR: %s\n", workDir)
 
-	path, err := os.Getwd()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to get working directory: %v\n", err)
-		os.Exit(1)
-	}
-	fmt.Printf("WORK_DIR: %s\n", path)
-
-	err = subMain()
+	err := subMain(workDir)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
 	}
 }
 
-func subMain() error {
+func subMain(workDir string) error {
 	data, err := os.ReadFile("go.mod")
 	if err != nil {
 		return fmt.Errorf("failed to read go.mod; %v", err)
@@ -111,10 +100,14 @@ func subMain() error {
 	}
 
 	for _, modules := range job {
-		err := util.ExecCmd(append([]string{"go", "get", "-d"}, modules...)...)
+		cmd := exec.Command("go", append([]string{"get", "-d"}, modules...)...)
+		cmd.Dir = workDir
+		err := util.Run(cmd)
 		if err != nil {
 			return err
 		}
 	}
-	return util.ExecCmd("go", "mod", "tidy")
+	cmd := exec.Command("go", "mod", "tidy")
+	cmd.Dir = workDir
+	return util.Run(cmd)
 }
