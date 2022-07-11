@@ -1,0 +1,24 @@
+lock:
+- name: k8s
+  packages:
+  - path:
+    - sigs.k8s.io/controller-runtime
+    tag: v0.12.3
+  - path:
+    - k8s.io/api
+    - k8s.io/apiextensions-apiserver
+    - k8s.io/apimachinery
+    - k8s.io/apiserver
+    - k8s.io/client-go
+    - k8s.io/cli-runtime
+    - k8s.io/kubectl
+    - k8s.io/kubelet
+    - k8s.io/kube-proxy
+    - k8s.io/kube-scheduler
+    tag: v0.24.2
+- name: cni
+  packages:
+  - path:
+    - github.com/containernetworking/cni
+    - github.com/containernetworking/plugins
+    tag: v1.0.1
