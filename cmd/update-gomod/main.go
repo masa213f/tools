@@ -42,6 +42,7 @@ func main() {
 	var deufaltConfig Config
 	err := yaml.Unmarshal(defaultConfigBytes, &deufaltConfig)
 	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: failed to unmarshal config yaml: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -62,13 +63,13 @@ func subMain(workDir string, config *Config) error {
 		return fmt.Errorf("failed to parse go.mod; %v", err)
 	}
 
-	packageRuleName := map[string]string{}
-	packageTag := map[string]string{}
+	lockRuleName := map[string]string{}
+	lockedTag := map[string]string{}
 	for _, rule := range config.LockRule {
 		for _, group := range rule.Packages {
 			for _, pkg := range group.Path {
-				packageRuleName[pkg] = rule.Name
-				packageTag[pkg] = group.Tag
+				lockRuleName[pkg] = rule.Name
+				lockedTag[pkg] = group.Tag
 			}
 		}
 	}
@@ -79,13 +80,10 @@ func subMain(workDir string, config *Config) error {
 		if r.Indirect {
 			continue
 		}
-
-		if rule := packageRuleName[r.Mod.Path]; rule != "" {
-			tag := packageTag[r.Mod.Path]
-			locked[rule] = append(locked[rule], r.Mod.Path+"@"+tag)
+		if rule := lockRuleName[r.Mod.Path]; rule != "" {
+			locked[rule] = append(locked[rule], r.Mod.Path+"@"+lockedTag[r.Mod.Path])
 			continue
 		}
-
 		jobs = append(jobs, []string{r.Mod.Path})
 	}
 	for ruleName, packages := range locked {
