@@ -15,7 +15,7 @@ lock:
     - k8s.io/kubelet
     - k8s.io/kube-proxy
     - k8s.io/kube-scheduler
-    tag: v0.24.2
+    tag: v0.24.3
 - name: cni
   packages:
   - path:
