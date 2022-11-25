@@ -3,7 +3,7 @@ lock:
   packages:
   - path:
     - sigs.k8s.io/controller-runtime
-    tag: v0.12.3
+    tag: v0.13.1
   - path:
     - k8s.io/api
     - k8s.io/apiextensions-apiserver
@@ -15,10 +15,4 @@ lock:
     - k8s.io/kubelet
     - k8s.io/kube-proxy
     - k8s.io/kube-scheduler
-    tag: v0.24.3
-- name: cni
-  packages:
-  - path:
-    - github.com/containernetworking/cni
-    - github.com/containernetworking/plugins
-    tag: v1.0.1
+    tag: v0.25.4
