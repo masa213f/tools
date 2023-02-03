@@ -93,16 +93,18 @@ func ExtractTarGz(tgzfilePath, outputDir string) error {
 				return fmt.Errorf("failed to create directory %s; %w", filePath, err)
 			}
 		case tar.TypeReg:
-			outFile, err := os.Create(filePath)
-			if err != nil {
-				return fmt.Errorf("failed to create file %s; %w", filePath, err)
-			}
-			defer outFile.Close()
-			if _, err := io.Copy(outFile, tarReader); err != nil {
-				return fmt.Errorf("failed to write file %s; %w", filePath, err)
-			}
-			if err := os.Chmod(filePath, fileMode); err != nil {
-				return fmt.Errorf("failed to change mode %s; %w", filePath, err)
+			{
+				outFile, err := os.Create(filePath)
+				if err != nil {
+					return fmt.Errorf("failed to create file %s; %w", filePath, err)
+				}
+				defer outFile.Close()
+				if _, err := io.Copy(outFile, tarReader); err != nil {
+					return fmt.Errorf("failed to write file %s; %w", filePath, err)
+				}
+				if err := os.Chmod(filePath, fileMode); err != nil {
+					return fmt.Errorf("failed to change mode %s; %w", filePath, err)
+				}
 			}
 		default:
 			return fmt.Errorf("unknown type: %s %d", header.Name, header.Typeflag)
