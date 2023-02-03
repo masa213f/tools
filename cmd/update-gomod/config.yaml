@@ -3,7 +3,7 @@ lock:
   packages:
   - path:
     - sigs.k8s.io/controller-runtime
-    tag: v0.14.2
+    tag: v0.13.1
   - path:
     - k8s.io/api
     - k8s.io/apiextensions-apiserver
