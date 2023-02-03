@@ -19,11 +19,15 @@ var permittedActions = map[string]string{
 	"actions/setup-python":               "v4",
 	"actions/upload-artifact":            "v3",
 	"azure/setup-helm":                   "v3",
+	"docker/build-push-action":           "v4",
+	"docker/login-action":                "v2",
+	"docker/metadata-action":             "v4",
+	"docker/setup-buildx-action":         "v2",
 	"google-github-actions/auth":         "v1",
 	"google-github-actions/setup-gcloud": "v1",
-	"goreleaser/goreleaser-action":       "b508e2e3ef3b19d4e4146d4f8fb3ba9db644a757", // v3.2.0
+	"goreleaser/goreleaser-action":       "f82d6c1c344bcacabba2c841718984797f664a6b", // v4.2.0
 	"helm/chart-testing-action":          "v2.3.1",
-	"helm/kind-action":                   "v1.4.0",
+	"helm/kind-action":                   "v1.5.0",
 	"rajatjindal/krew-release-bot":       "92da038bbf995803124a8e50ebd438b2f37bbbb0", // 0.0.43
 }
 
