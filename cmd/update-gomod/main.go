@@ -100,7 +100,7 @@ func subMain(workDir string, config *Config) error {
 		}
 	}
 
-	cmd := exec.Command("go", "mod", "tidy", "-compat=1.17")
+	cmd := exec.Command("go", "mod", "tidy")
 	cmd.Dir = workDir
 	return util.Run(cmd)
 }
