@@ -15,7 +15,7 @@ var permittedActions = map[string]string{
 	"actions/cache":                      "v3",
 	"actions/checkout":                   "v3",
 	"actions/download-artifact":          "v3",
-	"actions/setup-go":                   "v3",
+	"actions/setup-go":                   "v4",
 	"actions/setup-python":               "v4",
 	"actions/upload-artifact":            "v3",
 	"azure/setup-helm":                   "v3",
@@ -26,9 +26,9 @@ var permittedActions = map[string]string{
 	"google-github-actions/auth":         "v1",
 	"google-github-actions/setup-gcloud": "v1",
 	"goreleaser/goreleaser-action":       "f82d6c1c344bcacabba2c841718984797f664a6b", // v4.2.0
-	"helm/chart-testing-action":          "v2.3.1",
+	"helm/chart-testing-action":          "v2.4.0",
 	"helm/kind-action":                   "v1.5.0",
-	"rajatjindal/krew-release-bot":       "92da038bbf995803124a8e50ebd438b2f37bbbb0", // 0.0.43
+	"rajatjindal/krew-release-bot":       "df3eb197549e3568be8b4767eec31c5e8e8e6ad8", // 0.0.46
 }
 
 // Key: name, Value: reason
