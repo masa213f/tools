@@ -23,6 +23,7 @@ var permittedActions = map[string]string{
 	"docker/login-action":                "v2",
 	"docker/metadata-action":             "v4",
 	"docker/setup-buildx-action":         "v2",
+	"docker/setup-qemu-action":           "v2",
 	"google-github-actions/auth":         "v1",
 	"google-github-actions/setup-gcloud": "v1",
 	"goreleaser/goreleaser-action":       "f82d6c1c344bcacabba2c841718984797f664a6b", // v4.2.0
