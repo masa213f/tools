@@ -3,7 +3,7 @@ lock:
   packages:
   - path:
     - sigs.k8s.io/controller-runtime
-    tag: v0.15.0
+    tag: v0.15.2
   - path:
     - k8s.io/api
     - k8s.io/apiextensions-apiserver
@@ -15,4 +15,4 @@ lock:
     - k8s.io/kubelet
     - k8s.io/kube-proxy
     - k8s.io/kube-scheduler
-    tag: v0.27.2
+    tag: v0.27.7
