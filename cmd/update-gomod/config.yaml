@@ -1,19 +1,19 @@
 minimum-go-version: "1.21"
 lock:
-- name: k8s
-  modules:
-  - path:
-    - sigs.k8s.io/controller-runtime
-    tag: v0.15.3
-  - path:
-    - k8s.io/api
-    - k8s.io/apiextensions-apiserver
-    - k8s.io/apimachinery
-    - k8s.io/apiserver
-    - k8s.io/client-go
-    - k8s.io/cli-runtime
-    - k8s.io/kubectl
-    - k8s.io/kubelet
-    - k8s.io/kube-proxy
-    - k8s.io/kube-scheduler
-    tag: v0.27.7
+  - name: k8s
+    modules:
+      - path:
+          - sigs.k8s.io/controller-runtime
+        tag: v0.15.3
+      - path:
+          - k8s.io/api
+          - k8s.io/apiextensions-apiserver
+          - k8s.io/apimachinery
+          - k8s.io/apiserver
+          - k8s.io/client-go
+          - k8s.io/cli-runtime
+          - k8s.io/kubectl
+          - k8s.io/kubelet
+          - k8s.io/kube-proxy
+          - k8s.io/kube-scheduler
+        tag: v0.27.7
