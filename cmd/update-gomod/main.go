@@ -53,9 +53,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	jobs := categorizeModules(&config, modules)
-
-	err = update(workDir, config.MinimumGoVersion, jobs)
+	grouped := grouping(&config, modules)
+	err = update(workDir, config.MinimumGoVersion, grouped)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
@@ -82,7 +81,7 @@ func getDirectDependencies(modFilePath string) ([]string, error) {
 	return modules, nil
 }
 
-func categorizeModules(config *Config, modules []string) [][]string {
+func grouping(config *Config, modules []string) [][]string {
 	type lockedTag struct {
 		ruleName string
 		tag      string
@@ -96,24 +95,23 @@ func categorizeModules(config *Config, modules []string) [][]string {
 		}
 	}
 
-	jobs := [][]string{}
+	grouped := [][]string{}
 	locked := map[string][]string{}
 	for _, mod := range modules {
 		if l, ok := lockedModules[mod]; ok {
 			locked[l.ruleName] = append(locked[l.ruleName], mod+"@"+l.tag)
 			continue
 		}
-		jobs = append(jobs, []string{mod})
+		grouped = append(grouped, []string{mod})
 	}
 	for ruleName, mods := range locked {
 		fmt.Printf("LOCK RULE: %s %v\n", ruleName, mods)
-		jobs = append(jobs, mods)
+		grouped = append(grouped, mods)
 	}
-
-	return jobs
+	return grouped
 }
 
-func update(workDir string, goVersion string, packages [][]string) error {
+func update(workDir string, goVersion string, groupedModules [][]string) error {
 	cmd := exec.Command("go", "mod", "edit", "-go", goVersion)
 	cmd.Dir = workDir
 	err := util.Run(cmd)
@@ -121,8 +119,8 @@ func update(workDir string, goVersion string, packages [][]string) error {
 		return err
 	}
 
-	for _, p := range packages {
-		cmd := exec.Command("go", append([]string{"get", "-d"}, p...)...)
+	for _, modules := range groupedModules {
+		cmd := exec.Command("go", append([]string{"get", "-d"}, modules...)...)
 		cmd.Dir = workDir
 		err := util.Run(cmd)
 		if err != nil {
