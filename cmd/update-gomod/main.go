@@ -86,7 +86,7 @@ func grouping(config *Config, modules []string) [][]string {
 		ruleName string
 		tag      string
 	}
-	lockedModules := map[string]lockedTag{} // key: module name
+	lockedModules := map[string]lockedTag{}
 	for _, rule := range config.LockRule {
 		for _, group := range rule.Modules {
 			for _, mod := range group.Path {
