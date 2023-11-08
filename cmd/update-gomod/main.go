@@ -31,21 +31,45 @@ type ModuleGroup struct {
 //go:embed config.yaml
 var defaultConfigBytes []byte
 
+var configFilePath string
+
+func init() {
+	const usage = `Usage: update-gomod [<options>] [<work-dir>]
+
+Options:
+  -c <config>   path of config file
+  -h            display this help and exit
+`
+	flag.Usage = func() { fmt.Fprintf(flag.CommandLine.Output(), usage) }
+	flag.StringVar(&configFilePath, "c", "", "")
+}
+
 func main() {
 	flag.Parse()
 	if flag.NArg() > 1 {
-		fmt.Println("Usage: update-gomod [WORK_DIR]")
+		flag.Usage()
 		os.Exit(1)
 	}
 	workDir := flag.Arg(0)
-	fmt.Printf("WORK_DIR: %s\n", workDir)
+
+	rawConfig := defaultConfigBytes
+	if configFilePath != "" {
+		dat, err := os.ReadFile(configFilePath)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: failed to read config file: %v\n", err)
+			os.Exit(1)
+		}
+		rawConfig = dat
+	}
 
 	var config Config
-	err := yaml.Unmarshal(defaultConfigBytes, &config)
+	err := yaml.Unmarshal(rawConfig, &config)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: failed to unmarshal config yaml: %v\n", err)
 		os.Exit(1)
 	}
+
+	fmt.Printf("WORK_DIR: %s\n", workDir)
 
 	modules, err := getDirectDependencies(filepath.Join(workDir, "go.mod"))
 	if err != nil {
