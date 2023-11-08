@@ -26,7 +26,7 @@ var permittedActions = map[string]string{
 	"docker/setup-qemu-action":           "v3",
 	"google-github-actions/auth":         "v1",
 	"google-github-actions/setup-gcloud": "v1",
-	"goreleaser/goreleaser-action":       "7ec5c2b0c6cdda6e8bbb49444bc797dd33d74dd8", // v5.0.0
+	"goreleaser/goreleaser-action":       "v5",
 	"helm/chart-testing-action":          "v2.6.1",
 	"helm/kind-action":                   "v1.8.0",
 	"rajatjindal/krew-release-bot":       "df3eb197549e3568be8b4767eec31c5e8e8e6ad8", // 0.0.46
