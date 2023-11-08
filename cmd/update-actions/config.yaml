@@ -1,0 +1,43 @@
+allow:
+  - name: actions/cache
+    tag: "v3"
+  - name: actions/checkout
+    tag: "v4"
+  - name: actions/download-artifact
+    tag: "v3"
+  - name: actions/setup-go
+    tag: "v4"
+  - name: actions/setup-python
+    tag: "v4"
+  - name: actions/upload-artifact
+    tag: "v3"
+  - name: azure/setup-helm
+    tag: "v3"
+  - name: docker/build-push-action
+    tag: "v5"
+  - name: docker/login-action
+    tag: "v3"
+  - name: docker/metadata-action
+    tag: "v5"
+  - name: docker/setup-buildx-action
+    tag: "v3"
+  - name: docker/setup-qemu-action
+    tag: "v3"
+  - name: google-github-actions/auth
+    tag: "v1"
+  - name: google-github-actions/setup-gcloud
+    tag: "v1"
+  - name: goreleaser/goreleaser-action
+    tag: "v5"
+  - name: helm/chart-testing-action
+    tag: "v2.6.1"
+  - name: helm/kind-action
+    tag: "v1.8.0"
+  - name: rajatjindal/krew-release-bot
+    tag: "v0.0.46"
+    hash: "df3eb197549e3568be8b4767eec31c5e8e8e6ad8"
+deny:
+  - name: actions/create-release
+    reason: archived
+  - name: actions/upload-release-asset
+    reason: archived
