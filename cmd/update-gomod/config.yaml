@@ -1,6 +1,7 @@
+minimum-go-version: "1.21"
 lock:
 - name: k8s
-  packages:
+  modules:
   - path:
     - sigs.k8s.io/controller-runtime
     tag: v0.15.2

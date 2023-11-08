@@ -14,15 +14,16 @@ import (
 )
 
 type Config struct {
-	LockRule []Rule `json:"lock"`
+	MinimumGoVersion string `json:"minimum-go-version"`
+	LockRule         []Rule `json:"lock"`
 }
 
 type Rule struct {
-	Name     string         `json:"name"`
-	Packages []PackageGroup `json:"packages"`
+	Name    string        `json:"name"`
+	Modules []ModuleGroup `json:"modules"`
 }
 
-type PackageGroup struct {
+type ModuleGroup struct {
 	Path []string `json:"path"`
 	Tag  string   `json:"tag"`
 }
@@ -39,60 +40,89 @@ func main() {
 	workDir := flag.Arg(0)
 	fmt.Printf("WORK_DIR: %s\n", workDir)
 
-	var deufaltConfig Config
-	err := yaml.Unmarshal(defaultConfigBytes, &deufaltConfig)
+	var config Config
+	err := yaml.Unmarshal(defaultConfigBytes, &config)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: failed to unmarshal config yaml: %v\n", err)
 		os.Exit(1)
 	}
 
-	err = subMain(workDir, &deufaltConfig)
+	modules, err := getDirectDependencies(filepath.Join(workDir, "go.mod"))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: failed to get direct dependencies: %v\n", err)
+		os.Exit(1)
+	}
+
+	jobs := categorizeModules(&config, modules)
+
+	err = update(workDir, config.MinimumGoVersion, jobs)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
 	}
 }
 
-func subMain(workDir string, config *Config) error {
-	data, err := os.ReadFile(filepath.Join(workDir, "go.mod"))
+func getDirectDependencies(modFilePath string) ([]string, error) {
+	data, err := os.ReadFile(modFilePath)
 	if err != nil {
-		return fmt.Errorf("failed to read go.mod; %v", err)
+		return nil, err
 	}
 	file, err := modfile.Parse("go.mod", data, nil)
 	if err != nil {
-		return fmt.Errorf("failed to parse go.mod; %v", err)
+		return nil, err
 	}
 
-	lockRuleName := map[string]string{}
-	lockedTag := map[string]string{}
+	modules := []string{}
+	for _, r := range file.Require {
+		if r.Indirect {
+			continue
+		}
+		modules = append(modules, r.Mod.Path)
+	}
+	return modules, nil
+}
+
+func categorizeModules(config *Config, modules []string) [][]string {
+	type lockedTag struct {
+		ruleName string
+		tag      string
+	}
+	lockedModules := map[string]lockedTag{} // key: module name
 	for _, rule := range config.LockRule {
-		for _, group := range rule.Packages {
-			for _, pkg := range group.Path {
-				lockRuleName[pkg] = rule.Name
-				lockedTag[pkg] = group.Tag
+		for _, group := range rule.Modules {
+			for _, mod := range group.Path {
+				lockedModules[mod] = lockedTag{ruleName: rule.Name, tag: group.Tag}
 			}
 		}
 	}
 
 	jobs := [][]string{}
 	locked := map[string][]string{}
-	for _, r := range file.Require {
-		if r.Indirect {
+	for _, mod := range modules {
+		if l, ok := lockedModules[mod]; ok {
+			locked[l.ruleName] = append(locked[l.ruleName], mod+"@"+l.tag)
 			continue
 		}
-		if rule := lockRuleName[r.Mod.Path]; rule != "" {
-			locked[rule] = append(locked[rule], r.Mod.Path+"@"+lockedTag[r.Mod.Path])
-			continue
-		}
-		jobs = append(jobs, []string{r.Mod.Path})
+		jobs = append(jobs, []string{mod})
 	}
-	for ruleName, packages := range locked {
-		fmt.Printf("LOCK RULE: %s %v\n", ruleName, packages)
-		jobs = append(jobs, packages)
+	for ruleName, mods := range locked {
+		fmt.Printf("LOCK RULE: %s %v\n", ruleName, mods)
+		jobs = append(jobs, mods)
 	}
 
-	for _, packages := range jobs {
-		cmd := exec.Command("go", append([]string{"get", "-d"}, packages...)...)
+	return jobs
+}
+
+func update(workDir string, goVersion string, packages [][]string) error {
+	cmd := exec.Command("go", "mod", "edit", "-go", goVersion)
+	cmd.Dir = workDir
+	err := util.Run(cmd)
+	if err != nil {
+		return err
+	}
+
+	for _, p := range packages {
+		cmd := exec.Command("go", append([]string{"get", "-d"}, p...)...)
 		cmd.Dir = workDir
 		err := util.Run(cmd)
 		if err != nil {
@@ -100,7 +130,7 @@ func subMain(workDir string, config *Config) error {
 		}
 	}
 
-	cmd := exec.Command("go", "mod", "tidy")
+	cmd = exec.Command("go", "mod", "tidy")
 	cmd.Dir = workDir
 	return util.Run(cmd)
 }
