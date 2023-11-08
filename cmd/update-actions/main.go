@@ -13,21 +13,21 @@ import (
 // Key: name, Value: tag
 var permittedActions = map[string]string{
 	"actions/cache":                      "v3",
-	"actions/checkout":                   "v3",
+	"actions/checkout":                   "v4",
 	"actions/download-artifact":          "v3",
 	"actions/setup-go":                   "v4",
 	"actions/setup-python":               "v4",
 	"actions/upload-artifact":            "v3",
 	"azure/setup-helm":                   "v3",
-	"docker/build-push-action":           "v4",
-	"docker/login-action":                "v2",
-	"docker/metadata-action":             "v4",
-	"docker/setup-buildx-action":         "v2",
-	"docker/setup-qemu-action":           "v2",
+	"docker/build-push-action":           "v5",
+	"docker/login-action":                "v3",
+	"docker/metadata-action":             "v5",
+	"docker/setup-buildx-action":         "v3",
+	"docker/setup-qemu-action":           "v3",
 	"google-github-actions/auth":         "v1",
 	"google-github-actions/setup-gcloud": "v1",
-	"goreleaser/goreleaser-action":       "336e29918d653399e599bfca99fadc1d7ffbc9f7", // v4.3.0
-	"helm/chart-testing-action":          "v2.4.0",
+	"goreleaser/goreleaser-action":       "7ec5c2b0c6cdda6e8bbb49444bc797dd33d74dd8", // v5.0.0
+	"helm/chart-testing-action":          "v2.6.1",
 	"helm/kind-action":                   "v1.8.0",
 	"rajatjindal/krew-release-bot":       "df3eb197549e3568be8b4767eec31c5e8e8e6ad8", // 0.0.46
 }
