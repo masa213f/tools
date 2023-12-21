@@ -16,4 +16,4 @@ lock:
           - k8s.io/kubelet
           - k8s.io/kube-proxy
           - k8s.io/kube-scheduler
-        tag: v0.27.8
+        tag: v0.27.9
