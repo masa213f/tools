@@ -1,18 +1,18 @@
 allow:
   - name: actions/cache
-    tag: "v3"
+    tag: "v4"
   - name: actions/checkout
     tag: "v4"
   - name: actions/download-artifact
-    tag: "v3"
+    tag: "v4"
   - name: actions/setup-go
     tag: "v4"
   - name: actions/setup-python
-    tag: "v4"
+    tag: "v5"
   - name: actions/upload-artifact
-    tag: "v3"
+    tag: "v4"
   - name: azure/setup-helm
-    tag: "v3"
+    tag: "v4"
   - name: docker/build-push-action
     tag: "v5"
   - name: docker/login-action
@@ -24,15 +24,15 @@ allow:
   - name: docker/setup-qemu-action
     tag: "v3"
   - name: google-github-actions/auth
-    tag: "v1"
+    tag: "v2"
   - name: google-github-actions/setup-gcloud
-    tag: "v1"
+    tag: "v2"
   - name: goreleaser/goreleaser-action
     tag: "v5"
   - name: helm/chart-testing-action
     tag: "v2.6.1"
   - name: helm/kind-action
-    tag: "v1.8.0"
+    tag: "v1.9.0"
   - name: rajatjindal/krew-release-bot
     tag: "v0.0.46"
     hash: "df3eb197549e3568be8b4767eec31c5e8e8e6ad8"
