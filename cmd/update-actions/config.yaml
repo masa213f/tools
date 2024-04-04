@@ -6,7 +6,7 @@ allow:
   - name: actions/download-artifact
     tag: "v4"
   - name: actions/setup-go
-    tag: "v4"
+    tag: "v5"
   - name: actions/setup-python
     tag: "v5"
   - name: actions/upload-artifact
