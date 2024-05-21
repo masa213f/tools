@@ -14,8 +14,8 @@ import (
 )
 
 type Config struct {
-	MinimumGoVersion string `json:"minimum-go-version"`
-	LockRule         []Rule `json:"lock"`
+	GoVersion string `json:"go-version"`
+	LockRule  []Rule `json:"lock"`
 }
 
 type Rule struct {
@@ -78,7 +78,7 @@ func main() {
 	}
 
 	grouped := grouping(&config, modules)
-	err = update(workDir, config.MinimumGoVersion, grouped)
+	err = update(workDir, config.GoVersion, grouped)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
