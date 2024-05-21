@@ -31,4 +31,3 @@ build:
 .PHONY: install
 install:
 	go install ./cmd/...
-	sudo mv $(GOBIN)/setup-go /usr/local/sbin/
