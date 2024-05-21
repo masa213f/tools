@@ -32,10 +32,13 @@ allow:
   - name: helm/chart-testing-action
     tag: "v2.6.1"
   - name: helm/kind-action
-    tag: "v1.9.0"
+    tag: "v1.10.0"
   - name: rajatjindal/krew-release-bot
     tag: "v0.0.46"
     hash: "df3eb197549e3568be8b4767eec31c5e8e8e6ad8"
+  - name: tj-actions/changed-files
+    tag: "v44.4.0"
+    hash: "a29e8b565651ce417abb5db7164b4a2ad8b6155c"
 deny:
   - name: actions/create-release
     reason: archived
