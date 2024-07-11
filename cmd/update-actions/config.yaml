@@ -14,7 +14,7 @@ allow:
   - name: azure/setup-helm
     tag: "v4"
   - name: docker/build-push-action
-    tag: "v5"
+    tag: "v6"
   - name: docker/login-action
     tag: "v3"
   - name: docker/metadata-action
@@ -28,7 +28,7 @@ allow:
   - name: google-github-actions/setup-gcloud
     tag: "v2"
   - name: goreleaser/goreleaser-action
-    tag: "v5"
+    tag: "v6"
   - name: helm/chart-testing-action
     tag: "v2.6.1"
   - name: helm/kind-action
