@@ -1,10 +1,10 @@
 module github.com/masa213f/tools
 
-go 1.21
+go 1.22.5
 
 require (
-	github.com/goccy/go-yaml v1.11.2
-	golang.org/x/mod v0.14.0
+	github.com/goccy/go-yaml v1.12.0
+	golang.org/x/mod v0.19.0
 )
 
 require (
