@@ -32,6 +32,8 @@ type DeniedAction struct {
 //go:embed config.yaml
 var defaultConfigBytes []byte
 
+var configFilePath string
+
 var (
 	findActionRe    = regexp.MustCompile(`.*\suses:\s*(\S+)\s*`)
 	replaceActionRe = regexp.MustCompile(`(.*\suses:).*`)
@@ -103,10 +105,21 @@ func getWorkflowFiles(dir string) ([]string, error) {
 	return files, err
 }
 
+func init() {
+	const usage = `Usage: update-actions [<options>] [<target-dir>]
+
+Options:
+  -c <config>   path of config file
+  -h            display this help and exit
+`
+	flag.Usage = func() { fmt.Fprintf(flag.CommandLine.Output(), usage) }
+	flag.StringVar(&configFilePath, "c", "", "")
+}
+
 func main() {
 	flag.Parse()
 	if flag.NArg() > 1 {
-		fmt.Println("Usage: update-actions [<target-dir>]")
+		flag.Usage()
 		os.Exit(1)
 	}
 	targetDir := "."
@@ -114,8 +127,18 @@ func main() {
 		targetDir = flag.Arg(0)
 	}
 
+	rawConfig := defaultConfigBytes
+	if configFilePath != "" {
+		dat, err := os.ReadFile(configFilePath)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: failed to read config file: %v\n", err)
+			os.Exit(1)
+		}
+		rawConfig = dat
+	}
+
 	var config Config
-	err := yaml.Unmarshal(defaultConfigBytes, &config)
+	err := yaml.Unmarshal(rawConfig, &config)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: failed to unmarshal config yaml: %v\n", err)
 		os.Exit(1)
