@@ -30,4 +30,5 @@ build:
 
 .PHONY: install
 install:
-	go install ./cmd/...
+	go install ./cmd/update-actions
+	go install ./cmd/update-gomod

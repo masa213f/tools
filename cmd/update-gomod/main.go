@@ -144,7 +144,7 @@ func update(workDir string, goVersion string, groupedModules [][]string) error {
 	}
 
 	for _, modules := range groupedModules {
-		cmd := exec.Command("go", append([]string{"get", "-d"}, modules...)...)
+		cmd := exec.Command("go", append([]string{"get"}, modules...)...)
 		cmd.Dir = workDir
 		err := util.Run(cmd)
 		if err != nil {
