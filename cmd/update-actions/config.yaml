@@ -30,17 +30,16 @@ allow:
   - name: goreleaser/goreleaser-action
     tag: "v6"
   - name: helm/chart-testing-action
-    tag: "v2.6.1"
+    tag: "v2.7.0"
   - name: helm/kind-action
-    tag: "v1.10.0"
+    tag: "v1.12.0"
   - name: rajatjindal/krew-release-bot
     tag: "v0.0.47"
     hash: "3d9faef30a82761d610544f62afddca00993eef9"
-  - name: tj-actions/changed-files
-    tag: "v45.0.4"
-    hash: "4edd678ac3f81e2dc578756871e4d00c19191daf"
 deny:
   - name: actions/create-release
     reason: archived
   - name: actions/upload-release-asset
     reason: archived
+  - name: tj-actions/changed-files
+    reason: no
