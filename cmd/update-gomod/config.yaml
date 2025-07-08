@@ -1,4 +1,4 @@
-go-version: "1.24.3"
+go-version: "1.24.4"
 lock:
   - name: k8s
     modules:
@@ -11,9 +11,11 @@ lock:
           - k8s.io/apimachinery
           - k8s.io/apiserver
           - k8s.io/client-go
+          - k8s.io/cli-api
+          - k8s.io/cli-client
           - k8s.io/cli-runtime
           - k8s.io/kubectl
           - k8s.io/kubelet
           - k8s.io/kube-proxy
           - k8s.io/kube-scheduler
-        tag: v0.33.1
+        tag: v0.33.2
