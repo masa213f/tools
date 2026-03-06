@@ -1,41 +1,41 @@
 allow:
   - name: actions/cache
-    tag: "v4"
-  - name: actions/checkout
     tag: "v5"
-  - name: actions/download-artifact
+  - name: actions/checkout
     tag: "v6"
+  - name: actions/download-artifact
+    tag: "v8"
   - name: actions/setup-go
     tag: "v6"
   - name: actions/setup-python
     tag: "v6"
   - name: actions/upload-artifact
-    tag: "v5"
+    tag: "v7"
   - name: azure/setup-helm
     tag: "v4"
   - name: docker/build-push-action
-    tag: "v6"
+    tag: "v7"
   - name: docker/login-action
-    tag: "v3"
+    tag: "v4"
   - name: docker/metadata-action
-    tag: "v5"
+    tag: "v6"
   - name: docker/setup-buildx-action
-    tag: "v3"
+    tag: "v4"
   - name: docker/setup-qemu-action
-    tag: "v3"
+    tag: "v4"
   - name: google-github-actions/auth
     tag: "v3"
   - name: google-github-actions/setup-gcloud
     tag: "v3"
   - name: goreleaser/goreleaser-action
-    tag: "v6"
+    tag: "7"
   - name: helm/chart-testing-action
     tag: "v2.8.0"
   - name: helm/kind-action
-    tag: "v1.13.0"
+    tag: "v1.14.0"
   - name: rajatjindal/krew-release-bot
-    tag: "v0.0.47"
-    hash: "3d9faef30a82761d610544f62afddca00993eef9"
+    tag: "v0.0.51"
+    hash: "c970b8a8f6dbc2f2285a26e3ae160903b87002c3"
 deny:
   - name: actions/create-release
     reason: archived
