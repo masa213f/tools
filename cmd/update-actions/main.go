@@ -13,6 +13,16 @@ import (
 	"github.com/goccy/go-yaml"
 )
 
+const usage = `Usage: update-actions [<work-dir>]
+
+Options:
+  -h            display this help and exit
+`
+
+func init() {
+	flag.Usage = func() { fmt.Fprint(flag.CommandLine.Output(), usage) }
+}
+
 type Config struct {
 	Allow []AllowedAction `json:"allow"`
 	Deny  []DeniedAction  `json:"deny"`
@@ -29,12 +39,11 @@ type DeniedAction struct {
 	Reason string `json:"reason"`
 }
 
-//go:embed config.yaml
-var defaultConfigBytes []byte
-
 var (
-	findActionRe    = regexp.MustCompile(`.*\suses:\s*(\S+)\s*`)
-	replaceActionRe = regexp.MustCompile(`(.*\suses:).*`)
+	//go:embed config.yaml
+	defaultConfigBytes []byte
+	findActionRe       = regexp.MustCompile(`.*\suses:\s*(\S+)\s*`)
+	replaceActionRe    = regexp.MustCompile(`(.*\suses:).*`)
 )
 
 func findAction(line string) string {
@@ -106,12 +115,12 @@ func getWorkflowFiles(dir string) ([]string, error) {
 func main() {
 	flag.Parse()
 	if flag.NArg() > 1 {
-		fmt.Println("Usage: update-actions [<target-dir>]")
+		flag.Usage()
 		os.Exit(1)
 	}
-	targetDir := "."
+	workDir := "."
 	if flag.NArg() == 1 {
-		targetDir = flag.Arg(0)
+		workDir = flag.Arg(0)
 	}
 
 	var config Config
@@ -130,7 +139,7 @@ func main() {
 		deniedActions[config.Deny[i].Name] = &config.Deny[i]
 	}
 
-	workflowFiles, err := getWorkflowFiles(targetDir)
+	workflowFiles, err := getWorkflowFiles(workDir)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "filepath.Walk: %v", err)
 		os.Exit(1)

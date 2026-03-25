@@ -7,11 +7,25 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/goccy/go-yaml"
-	"github.com/masa213f/tools/pkg/util"
 	"golang.org/x/mod/modfile"
 )
+
+const usage = `Usage: update-gomod [<options>] [<work-dir>]
+
+Options:
+  -c <config>   path of config file
+  -h            display this help and exit
+`
+
+func init() {
+	flag.Usage = func() { fmt.Fprint(flag.CommandLine.Output(), usage) }
+	flag.StringVar(&configFilePath, "c", "", "")
+}
+
+var configFilePath string
 
 type Config struct {
 	GoVersion string `json:"go-version"`
@@ -30,19 +44,6 @@ type ModuleGroup struct {
 
 //go:embed config.yaml
 var defaultConfigBytes []byte
-
-var configFilePath string
-
-func init() {
-	const usage = `Usage: update-gomod [<options>] [<work-dir>]
-
-Options:
-  -c <config>   path of config file
-  -h            display this help and exit
-`
-	flag.Usage = func() { fmt.Fprintf(flag.CommandLine.Output(), usage) }
-	flag.StringVar(&configFilePath, "c", "", "")
-}
 
 func main() {
 	flag.Parse()
@@ -135,10 +136,34 @@ func grouping(config *Config, modules []string) [][]string {
 	return grouped
 }
 
+func run(c *exec.Cmd) error {
+	stdoutStderr, err := c.CombinedOutput()
+
+	var b strings.Builder
+	fmt.Fprintf(&b, "RUN: %s\n", strings.Join(c.Args, " "))
+	if len(c.Dir) != 0 {
+		fmt.Fprintf(&b, "IN: %s\n", c.Dir)
+	}
+	if err != nil {
+		fmt.Fprintf(&b, "ERROR: %v\n", err)
+	}
+	if len(stdoutStderr) != 0 {
+		fmt.Fprintln(&b, string(stdoutStderr))
+	} else {
+		fmt.Fprintln(&b, "")
+	}
+	fmt.Print(b.String())
+
+	if err != nil {
+		return fmt.Errorf("failed to exec %s; %w", c.Args, err)
+	}
+	return nil
+}
+
 func update(workDir string, goVersion string, groupedModules [][]string) error {
 	cmd := exec.Command("go", "mod", "edit", "-go", goVersion)
 	cmd.Dir = workDir
-	err := util.Run(cmd)
+	err := run(cmd)
 	if err != nil {
 		return err
 	}
@@ -146,7 +171,7 @@ func update(workDir string, goVersion string, groupedModules [][]string) error {
 	for _, modules := range groupedModules {
 		cmd := exec.Command("go", append([]string{"get"}, modules...)...)
 		cmd.Dir = workDir
-		err := util.Run(cmd)
+		err := run(cmd)
 		if err != nil {
 			return err
 		}
@@ -154,5 +179,5 @@ func update(workDir string, goVersion string, groupedModules [][]string) error {
 
 	cmd = exec.Command("go", "mod", "tidy")
 	cmd.Dir = workDir
-	return util.Run(cmd)
+	return run(cmd)
 }
