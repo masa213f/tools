@@ -1,10 +1,10 @@
-go-version: "1.25.4"
+go-version: "1.26.1"
 lock:
   - name: k8s
     modules:
       - path:
           - sigs.k8s.io/controller-runtime
-        tag: v0.21.0
+        tag: v0.22.5
       - path:
           - k8s.io/api
           - k8s.io/apiextensions-apiserver
@@ -18,4 +18,4 @@ lock:
           - k8s.io/kubelet
           - k8s.io/kube-proxy
           - k8s.io/kube-scheduler
-        tag: v0.33.5
+        tag: v0.34.6
